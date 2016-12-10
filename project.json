@@ -1,0 +1,28 @@
+{
+    "buildOptions": {
+        "emitEntryPoint": false,
+        "preserveCompilationContext": true,
+        "debugType": "portable"
+    },
+    "dependencies": {
+    },
+    "frameworks": {
+        "netcoreapp1.0": {
+            "dependencies": {
+                "Microsoft.NETCore.App": {
+                    "type": "platform",
+                    "version": "1.0.0"
+                }
+            },
+            "imports": [
+                "dotnet5.6",
+                "dnxcore50",
+                "portable-net45+win8"
+            ]
+        }
+    },
+    "configurations": {
+        "TEST": {}
+    },
+    "version": "1.0.0-*"
+}
