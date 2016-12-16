@@ -11,7 +11,7 @@ namespace DbfReader
         private ByteFile _data;
         private int _columnOffset;
 
-        public static DbfTable OpenTable(string filepath)
+        public static DbfTable OpenTable(string filepath, bool includeDisplacement = false)
         {
             ByteFile data = ByteFile.Open(filepath);
 
@@ -20,7 +20,7 @@ namespace DbfReader
             }
 
             var result = new DbfReader(data);
-            return result.ParseTable();
+            return result.ParseTable(includeDisplacement);
         }
 
         private DbfReader(ByteFile data)
@@ -28,7 +28,7 @@ namespace DbfReader
             _data = data;
         }
 
-        private DbfTable ParseTable()
+        private DbfTable ParseTable(bool includeDisplacement)
         {
             var table = new DbfTable();
             int numRecords = ByteHelper.GetInt(_data.GetBytes(DbfByteOffset.NumRecords));
@@ -43,7 +43,7 @@ namespace DbfReader
 
             while (true) {
                 byte[] row = _data.GetBytes(dataPointer, dataPointer + SubrecordLength, false);
-                header = ParseHeader(row, headerIndex++);
+                header = ParseHeader(row, headerIndex++, includeDisplacement);
 
                 if (header == null) {
                     break;
@@ -63,7 +63,7 @@ namespace DbfReader
             return table;
         }
 
-        private DbfHeader ParseHeader(byte[] data, int index)
+        private DbfHeader ParseHeader(byte[] data, int index, bool includeDisplacement)
         {
             if (data[0] == _headerRecordTerminator) {
                 return null;
@@ -80,10 +80,13 @@ namespace DbfReader
             header.Index = index;
             header.Name = ByteHelper.GetString(data, DbfByteOffset.FieldName).ToLower();
             header.FieldType = GetFieldType(ByteHelper.GetBytes(data, DbfByteOffset.FieldType));
-            header.ColumnDisplacement = ByteHelper.GetInt(data, DbfByteOffset.ColumnDisplacement);
             header.Length = ByteHelper.GetInt(data, DbfByteOffset.LengthOfField);
             header.NumDecimalPlaces = ByteHelper.GetInt(data, DbfByteOffset.NumDecimalPlaces);
             header.ColumnOffset = _columnOffset;
+
+            if (includeDisplacement) {
+                header.ColumnDisplacement = ByteHelper.GetInt(data, DbfByteOffset.ColumnDisplacement);
+            }
 
             _columnOffset += header.Length + header.ColumnDisplacement;
 
