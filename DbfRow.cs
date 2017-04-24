@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Text;
 
 namespace DbfReader
 {
@@ -9,7 +8,8 @@ namespace DbfReader
         private byte[] _data;
         private DbfTable _table;
         private Dictionary<int, IDbfColumn> _columnCache = new Dictionary<int, IDbfColumn>();
-        public IDbfColumn this[int index]
+
+        public virtual IDbfColumn this[int index]
         {
             get
             {
@@ -17,7 +17,7 @@ namespace DbfReader
                 return GetColumn(header);
             }
         }
-        public IDbfColumn this[string name]
+        public virtual IDbfColumn this[string name]
         {
             get
             {
@@ -34,8 +34,9 @@ namespace DbfReader
 
         private IDbfColumn GetColumn(DbfHeader header)
         {
-            if (_columnCache.ContainsKey(header.Index)) {
-                return _columnCache[header.Index];
+            IDbfColumn result;
+            if (_columnCache.TryGetValue(header.Index, out result)) {
+                return result;
             }
 
             int offs = header.ColumnOffset;
@@ -45,7 +46,7 @@ namespace DbfReader
 
             Array.Copy(_data, offs, column, 0, length);
 
-            var result = DbfColumn.GetColumn(column, type);
+            result = DbfColumn.GetColumn(column, type);
 
             return _columnCache[header.Index] = result;
         }
