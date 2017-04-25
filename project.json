@@ -25,13 +25,13 @@
         "TEST": {}
     },
     "title": "DbfReader",
-    "version": "1.0.3",
+    "version": "1.0.4",
     "authors": [ "Matt Schwartz" ],
     "description": "Reads and parses DBF files for dotnet core without using the datatable stuff that got ixnayed in core",
     "packOptions": {
         "projectUrl": "https://github.com/mattschwartz/dbfreader",
         "tags": [ "dbf", "dotnet", "core" ],
-        "releaseNotes": "Made row accessors virtual so they can be overridden for testing."
+        "releaseNotes": "Extracted interface from DbfTable for dependency-injection testing."
     },
     "supports": {}
 }
