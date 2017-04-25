@@ -5,7 +5,7 @@ using System.Linq;
 
 namespace DbfReader
 {
-    public class DbfTable : IEnumerable<DbfRow>
+    public class DbfTable : IDbfTable
     {
         private List<DbfHeader> _headers = new List<DbfHeader>();
         private List<DbfRow> _rows = new List<DbfRow>();
@@ -38,7 +38,7 @@ namespace DbfReader
             if (_rowLength != int.MinValue) return _rowLength;
 
             var lastHeader = _headers.Last();
-            _rowLength = lastHeader.ColumnOffset + lastHeader.Length +1;
+            _rowLength = lastHeader.ColumnOffset + lastHeader.Length + 1;
 
             return _rowLength;
         }

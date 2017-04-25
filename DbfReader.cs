@@ -99,12 +99,12 @@ namespace DbfReader
                 throw new ArgumentOutOfRangeException("Field type must consist of only 1 byte");
             }
 
-            if (!DbfFieldType.IsValidType((char)data[0])) {
+            if (!DbfFieldType.IsValidType((char) data[0])) {
                 throw new ArgumentException(string.Format(
-                    "Field is not a valid field type: {0} / {1}", (char)data[0], (int)data[0]));
+                    "Field is not a valid field type: {0} / {1}", (char) data[0], (int) data[0]));
             }
 
-            return (char)data[0];
+            return (char) data[0];
         }
     }
 }

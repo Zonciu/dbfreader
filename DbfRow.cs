@@ -3,13 +3,13 @@ using System.Collections.Generic;
 
 namespace DbfReader
 {
-    public class DbfRow
+    public class DbfRow : IDbfRow
     {
         private byte[] _data;
         private DbfTable _table;
         private Dictionary<int, IDbfColumn> _columnCache = new Dictionary<int, IDbfColumn>();
 
-        public virtual IDbfColumn this[int index]
+        public IDbfColumn this[int index]
         {
             get
             {
@@ -17,7 +17,7 @@ namespace DbfReader
                 return GetColumn(header);
             }
         }
-        public virtual IDbfColumn this[string name]
+        public IDbfColumn this[string name]
         {
             get
             {
