@@ -1,4 +1,4 @@
-{
+﻿{
     "buildOptions": {
         "emitEntryPoint": false,
         "preserveCompilationContext": true,
@@ -20,9 +20,6 @@
                 "portable-net45+win8"
             ]
         }
-    },
-    "configurations": {
-        "TEST": {}
     },
     "title": "DbfReader",
     "version": "1.0.4",
