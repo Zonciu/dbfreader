@@ -8,10 +8,10 @@ namespace DbfReader
     public class DbfTable : IDbfTable
     {
         private List<DbfHeader> _headers = new List<DbfHeader>();
-        private List<DbfRow> _rows = new List<DbfRow>();
+        private List<IDbfRow> _rows = new List<IDbfRow>();
         private int _rowLength = int.MinValue;
 
-        public DbfRow this[int index]
+        public IDbfRow this[int index]
         {
             get
             {
@@ -74,7 +74,7 @@ namespace DbfReader
             return _headers.Any(t => t.Name == name.ToLower());
         }
 
-        public IEnumerator<DbfRow> GetEnumerator()
+        public IEnumerator<IDbfRow> GetEnumerator()
         {
             return _rows.GetEnumerator();
         }

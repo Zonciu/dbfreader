@@ -2,9 +2,9 @@
 
 namespace DbfReader
 {
-    public interface IDbfTable : IEnumerable<DbfRow>
+    public interface IDbfTable : IEnumerable<IDbfRow>
     {
-        DbfRow this[int index] { get; }
+        IDbfRow this[int index] { get; }
         bool HasHeader(string name);
     }
 }

@@ -22,7 +22,7 @@
         }
     },
     "title": "DbfReader",
-    "version": "1.0.4",
+    "version": "1.1.0",
     "authors": [ "Matt Schwartz" ],
     "description": "Reads and parses DBF files for dotnet core without using the datatable stuff that got ixnayed in core",
     "packOptions": {
