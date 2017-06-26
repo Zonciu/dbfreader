@@ -22,13 +22,13 @@
         }
     },
     "title": "DbfReader",
-    "version": "1.1.0",
+    "version": "1.1.1",
     "authors": [ "Matt Schwartz" ],
     "description": "Reads and parses DBF files for dotnet core without using the datatable stuff that got ixnayed in core",
     "packOptions": {
         "projectUrl": "https://github.com/mattschwartz/dbfreader",
         "tags": [ "dbf", "dotnet", "core" ],
-        "releaseNotes": "Extracted interface from DbfTable for dependency-injection testing."
+        "releaseNotes": "Opening a DbfTable disposes extraneous data, now."
     },
     "supports": {}
 }
