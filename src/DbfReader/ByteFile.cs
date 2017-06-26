@@ -3,20 +3,25 @@ using System.IO;
 
 namespace DbfReader
 {
-    internal class ByteFile
+    internal class ByteFile : IDisposable
     {
         private byte[] _data;
 
         public static ByteFile Open(string filepath)
         {
             if (!File.Exists(filepath)) {
-                return null;
+                throw new FileNotFoundException($"The specified file could not be located: {filepath}");
             }
 
             return new ByteFile
             {
                 _data = File.ReadAllBytes(filepath)
             };
+        }
+
+        public void Dispose()
+        {
+            _data = null;
         }
 
         public int Length
@@ -48,7 +53,7 @@ namespace DbfReader
                 return null;
             }
             if (end < 0) {
-                Console.WriteLine("Invalid value for start {0}", start);
+                Console.WriteLine("Invalid value for end {0}", end);
                 return null;
             }
             if (start < 0) {
