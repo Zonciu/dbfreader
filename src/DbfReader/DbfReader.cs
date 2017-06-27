@@ -1,4 +1,5 @@
-﻿using System;
+﻿using DbfReader.Exceptions;
+using System;
 
 namespace DbfReader
 {
@@ -72,10 +73,7 @@ namespace DbfReader
             }
 
             if (data.Length != SubrecordLength) {
-                throw new ArgumentOutOfRangeException(string.Format(
-                    "Subrecord length ({0}) should be equal to {1}",
-                    data.Length,
-                    SubrecordLength));
+                throw new DbfParseException($"Subrecord length ({data.Length}) should be equal to {SubrecordLength}");
             }
             var header = new DbfHeader();
 
@@ -98,12 +96,11 @@ namespace DbfReader
         private char GetFieldType(byte[] data)
         {
             if (data.Length != 1) {
-                throw new ArgumentOutOfRangeException("Field type must consist of only 1 byte");
+                throw new DbfParseException("Field type must consist of only 1 byte");
             }
 
             if (!DbfFieldType.IsValidType((char) data[0])) {
-                throw new ArgumentException(string.Format(
-                    "Field is not a valid field type: {0} / {1}", (char) data[0], (int) data[0]));
+                throw new DbfParseException($"Field is not a valid field type: {(char) data[0]} / {(int) data[0]}");
             }
 
             return (char) data[0];

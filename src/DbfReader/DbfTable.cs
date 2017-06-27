@@ -1,4 +1,5 @@
-﻿using System;
+﻿using DbfReader.Exceptions;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
@@ -49,8 +50,7 @@ namespace DbfReader
                 .SingleOrDefault(t => t.Name == name.ToLower());
 
             if (result == null) {
-                throw new ArgumentOutOfRangeException(string.Format(
-                    "Invalid value for column index {0}", name));
+                throw new DbfInvalidColumnException(name);
             }
 
             return result;
@@ -62,8 +62,7 @@ namespace DbfReader
                 .SingleOrDefault(t => t.Index == index);
 
             if (result == null) {
-                throw new ArgumentOutOfRangeException(string.Format(
-                    "Invalid value for column index {0}", index));
+                throw new DbfInvalidColumnException(index);
             }
 
             return result;

@@ -1,8 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using DbfReader.Exceptions;
+using System;
 using System.Globalization;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace DbfReader
 {
@@ -47,8 +45,11 @@ namespace DbfReader
 
         private static bool IsBooleanField(byte[] data, char fieldType)
         {
-            if (fieldType != DbfFieldType.Character || data.Length > 1) return false;
-            switch ((char)data[0]) {
+            if (fieldType != DbfFieldType.Character || data.Length > 1) {
+                return false;
+            }
+
+            switch ((char) data[0]) {
                 case 'Y':
                 case 'y':
                 case 'N':
@@ -89,7 +90,7 @@ namespace DbfReader
         {
             string result = "";
             foreach (var byt in _data) {
-                result += (char)byt;
+                result += (char) byt;
             }
 
             return result;
@@ -97,23 +98,25 @@ namespace DbfReader
 
         public string GetString()
         {
-            if (!DbfFieldType.IsString(_fieldType)) ThrowTypeMismatch<string>();
+            string str = ForceString();
 
-            return ForceString();
+            if (!DbfFieldType.IsString(_fieldType)) {
+                throw new DbfColumnTypeMismatchException(_fieldType, str, typeof(string));
+            }
+
+            return str;
         }
 
         public DateTime GetDate(string format = "yyyyMMdd")
         {
-            if (!DbfFieldType.IsDate(_fieldType)) ThrowTypeMismatch<DateTime>();
-
             string str = ForceString();
+            if (!DbfFieldType.IsDate(_fieldType)) {
+                throw new DbfColumnTypeMismatchException(_fieldType, str, typeof(DateTime));
+            }
 
             DateTime result;
             if (!DateTime.TryParseExact(str, format, null, DateTimeStyles.None, out result)) {
-                throw new ArgumentException(string.Format(
-                    "Date was not in format provided and could not be parsed\nProvided {0}\nValue {1}",
-                    format,
-                    str));
+                throw new DbfDateTimeInvalidFormatException(str, format);
             }
 
             return result;
@@ -121,9 +124,10 @@ namespace DbfReader
 
         public DateTime? GetDateOrNull(string format = "yyyyMMdd")
         {
-            if (!DbfFieldType.IsDate(_fieldType)) ThrowTypeMismatch<DateTime>();
-
             string str = ForceString();
+            if (!DbfFieldType.IsDate(_fieldType)) {
+                throw new DbfColumnTypeMismatchException(_fieldType, str, typeof(DateTime));
+            }
 
             if (string.IsNullOrWhiteSpace(str)) {
                 return null;
@@ -131,10 +135,7 @@ namespace DbfReader
 
             DateTime result;
             if (!DateTime.TryParseExact(str, format, null, DateTimeStyles.None, out result)) {
-                throw new ArgumentException(string.Format(
-                    "Date was not in format provided and could not be parsed\nProvided {0}\nValue {1}",
-                    format,
-                    str));
+                throw new DbfDateTimeInvalidFormatException(str, format);
             }
 
             return result;
@@ -142,15 +143,14 @@ namespace DbfReader
 
         public int GetInt()
         {
-            if (!DbfFieldType.IsNumeric(_fieldType)) ThrowTypeMismatch<int>();
             string str = ForceString();
+            if (!DbfFieldType.IsNumeric(_fieldType)) {
+                throw new DbfColumnTypeMismatchException(_fieldType, str, typeof(int));
+            }
 
             int result;
             if (!int.TryParse(str, out result)) {
-                throw new InvalidCastException(string.Format(
-                    "ColType {0} failed to parse integer {1}",
-                    _fieldType,
-                    str));
+                throw new DbfColumnTypeMismatchException(_fieldType, str, typeof(int));
             }
 
             return result;
@@ -158,8 +158,10 @@ namespace DbfReader
 
         public int? GetIntOrNull()
         {
-            if (!DbfFieldType.IsNumeric(_fieldType)) ThrowTypeMismatch<int>();
             string str = ForceString();
+            if (!DbfFieldType.IsNumeric(_fieldType)) {
+                throw new DbfColumnTypeMismatchException(_fieldType, str, typeof(int));
+            }
 
             int result;
             if (!int.TryParse(str, out result)) {
@@ -171,15 +173,14 @@ namespace DbfReader
 
         public decimal GetDecimal()
         {
-            if (!DbfFieldType.IsFloatingPoint(_fieldType)) ThrowTypeMismatch<decimal>();
             string str = ForceString();
+            if (!DbfFieldType.IsFloatingPoint(_fieldType)) {
+                throw new DbfColumnTypeMismatchException(_fieldType, str, typeof(decimal));
+            }
 
             decimal result;
             if (!decimal.TryParse(str, NumberStyles.Number, null, out result)) {
-                throw new InvalidCastException(string.Format(
-                    "Failed to parse decimal {0} -> {1}",
-                    _fieldType,
-                    str));
+                throw new DbfColumnTypeMismatchException(_fieldType, str, typeof(decimal));
             }
 
             return result;
@@ -187,10 +188,12 @@ namespace DbfReader
 
         public bool GetBool()
         {
-            if (!DbfFieldType.IsBool(_fieldType)) ThrowTypeMismatch<bool>();
             string str = ForceString();
+            if (!DbfFieldType.IsBool(_fieldType)) {
+                throw new DbfColumnTypeMismatchException(_fieldType, str, typeof(bool));
+            }
 
-            switch ((char)_data[0]) {
+            switch ((char) _data[0]) {
                 case 'Y':
                 case 'y':
                     return true;
@@ -200,19 +203,8 @@ namespace DbfReader
                     return false;
 
                 default:
-                    throw new InvalidCastException(string.Format(
-                        "Failed to parse bool {0} -> {1}",
-                        _fieldType,
-                        str));
+                    throw new DbfColumnTypeMismatchException(_fieldType, str, typeof(bool));
             }
-        }
-
-        private void ThrowTypeMismatch<T>()
-        {
-            throw new ArgumentException(string.Format(
-                "Column of type {0} is not of type {1}",
-                _fieldType,
-                typeof(T).FullName));
         }
     }
 }
