@@ -27,11 +27,19 @@ namespace DbfReader
         private readonly int _length;
         private readonly char _fieldType;
 
+        private readonly string _dataAsString;
+        private bool _cacheSet;
+        private object _dataCache;
+
         private DbfColumn(byte[] data, char fieldType)
         {
             _data = data;
             _length = data.Length;
             _fieldType = fieldType;
+
+            _cacheSet = false;
+            _dataCache = null;
+            _dataAsString = ForceString();
         }
 
         public static IDbfColumn GetColumn(byte[] data, char fieldType)
@@ -98,18 +106,29 @@ namespace DbfReader
 
         public string GetString()
         {
-            string str = ForceString();
+            if (_cacheSet) {
+                return _dataCache as string;
+            }
+
+            string str = _dataAsString;
 
             if (!DbfFieldType.IsString(_fieldType)) {
                 throw new DbfColumnTypeMismatchException(_fieldType, str, typeof(string));
             }
+
+            _cacheSet = true;
+            _dataCache = str;
 
             return str;
         }
 
         public DateTime GetDate(string format = "yyyyMMdd")
         {
-            string str = ForceString();
+            if (_cacheSet) {
+                return (DateTime) _dataCache;
+            }
+
+            string str = _dataAsString;
             if (!DbfFieldType.IsDate(_fieldType)) {
                 throw new DbfColumnTypeMismatchException(_fieldType, str, typeof(DateTime));
             }
@@ -119,12 +138,19 @@ namespace DbfReader
                 throw new DbfDateTimeInvalidFormatException(str, format);
             }
 
+            _cacheSet = true;
+            _dataCache = result;
+
             return result;
         }
 
         public DateTime? GetDateOrNull(string format = "yyyyMMdd")
         {
-            string str = ForceString();
+            if (_cacheSet) {
+                return _dataCache as DateTime?;
+            }
+
+            string str = _dataAsString;
             if (!DbfFieldType.IsDate(_fieldType)) {
                 throw new DbfColumnTypeMismatchException(_fieldType, str, typeof(DateTime));
             }
@@ -138,12 +164,19 @@ namespace DbfReader
                 throw new DbfDateTimeInvalidFormatException(str, format);
             }
 
+            _cacheSet = true;
+            _dataCache = result;
+
             return result;
         }
 
         public int GetInt()
         {
-            string str = ForceString();
+            if (_cacheSet) {
+                return (int) _dataCache;
+            }
+
+            string str = _dataAsString;
             if (!DbfFieldType.IsNumeric(_fieldType)) {
                 throw new DbfColumnTypeMismatchException(_fieldType, str, typeof(int));
             }
@@ -153,12 +186,19 @@ namespace DbfReader
                 throw new DbfColumnTypeMismatchException(_fieldType, str, typeof(int));
             }
 
+            _cacheSet = true;
+            _dataCache = result;
+
             return result;
         }
 
         public int? GetIntOrNull()
         {
-            string str = ForceString();
+            if (_cacheSet) {
+                return _dataCache as int?;
+            }
+
+            string str = _dataAsString;
             if (!DbfFieldType.IsNumeric(_fieldType)) {
                 throw new DbfColumnTypeMismatchException(_fieldType, str, typeof(int));
             }
@@ -168,12 +208,19 @@ namespace DbfReader
                 return null;
             }
 
+            _cacheSet = true;
+            _dataCache = result;
+
             return result;
         }
 
         public decimal GetDecimal()
         {
-            string str = ForceString();
+            if (_cacheSet) {
+                return (decimal) _dataCache;
+            }
+
+            string str = _dataAsString;
             if (!DbfFieldType.IsFloatingPoint(_fieldType)) {
                 throw new DbfColumnTypeMismatchException(_fieldType, str, typeof(decimal));
             }
@@ -183,12 +230,19 @@ namespace DbfReader
                 throw new DbfColumnTypeMismatchException(_fieldType, str, typeof(decimal));
             }
 
+            _cacheSet = true;
+            _dataCache = result;
+
             return result;
         }
 
         public bool GetBool()
         {
-            string str = ForceString();
+            if (_cacheSet) {
+                return (bool) _dataCache;
+            }
+
+            string str = _dataAsString;
             if (!DbfFieldType.IsBool(_fieldType)) {
                 throw new DbfColumnTypeMismatchException(_fieldType, str, typeof(bool));
             }
@@ -196,10 +250,16 @@ namespace DbfReader
             switch ((char) _data[0]) {
                 case 'Y':
                 case 'y':
+                    _cacheSet = true;
+                    _dataCache = true;
+
                     return true;
 
                 case 'N':
                 case 'n':
+                    _cacheSet = true;
+                    _dataCache = false;
+
                     return false;
 
                 default:
