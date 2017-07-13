@@ -4,7 +4,7 @@ using System;
 namespace DbfReader
 {
     // http://www.dbf2002.com/dbf-file-format.html
-    public class DbfReader : IDisposable
+    public class DbfReaderUtil : IDisposable
     {
         private const int SubrecordLength = 32;
         private const byte _headerRecordTerminator = 0x0d;
@@ -16,12 +16,12 @@ namespace DbfReader
         {
             ByteFile data = ByteFile.Open(filepath);
 
-            using (var result = new DbfReader(data)) {
+            using (var result = new DbfReaderUtil(data)) {
                 return result.ParseTable(includeDisplacement);
             }
         }
 
-        private DbfReader(ByteFile data)
+        private DbfReaderUtil(ByteFile data)
         {
             _data = data;
         }
